@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %></title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lit Web Components -->
+  <script type="module" src="/components/marketplace-app.js"></script>
+  <script type="module" src="/components/item-card.js"></script>
+  <script type="module" src="/components/chat-window.js"></script>
+  <script type="module" src="/components/price-offer.js"></script>
+  <script type="module" src="/components/add-item.js"></script>
+
+  <style>
+    /* Prevent flash of unstyled custom elements */
+    marketplace-app,
+    item-card,
+    chat-window,
+    price-offer,
+    add-item {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Navigation Header -->
+  <header class="bg-blue-700 text-white shadow-lg" role="banner">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🏺</span>
+        <h1 class="text-xl font-bold tracking-tight">Collectible Trading Post</h1>
+      </div>
+      <nav class="flex items-center gap-4" role="navigation" aria-label="Main navigation">
+        <a href="/" class="hover:text-blue-200 transition-colors text-sm font-medium">
+          Browse
+        </a>
+        <a href="/seller" class="hover:text-blue-200 transition-colors text-sm font-medium">
+          Sell Items
+        </a>
+        <div class="bg-blue-600 rounded-full px-3 py-1 text-sm">
+          👤 <%= user.name %>
+          <span class="ml-1 text-xs bg-blue-500 rounded px-1"><%= user.role %></span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8" role="main">
+
+    <%# Server-Determined Component Rendering %>
+    <%# The server decides which components appear based on the route/user role %>
+
+    <% if (components.includes('add-item')) { %>
+      <section aria-label="Add new item" class="mb-8">
+        <add-item
+          user-id="<%= user.id %>"
+          user-name="<%= user.name %>">
+        </add-item>
+      </section>
+    <% } %>
+
+    <% if (components.includes('marketplace-app')) { %>
+      <section aria-label="Marketplace listings">
+        <marketplace-app
+          current-user-id="<%= user.id %>"
+          current-user-name="<%= user.name %>"
+          user-role="<%= user.role %>">
+        </marketplace-app>
+      </section>
+    <% } %>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-400 text-center py-6 mt-16 text-sm" role="contentinfo">
+    <p>© 2025 Collectible Trading Post · Built with EJS + Lit + Tailwind</p>
+  </footer>
+
+  <!-- Pass server data to client-side components safely -->
+  <script>
+    window.__APP_USER__ = {
+      id: "<%= user.id %>",
+      name: "<%= user.name %>",
+      role: "<%= user.role %>"
+    };
+    window.__API_BASE__ = "http://localhost:3000";
+  </script>
+
+</body>
+</html>
